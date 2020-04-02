@@ -12,3 +12,11 @@ dubbo:
   protocol:
     name: dubbo
     port: 20880
+flowlimit:
+  env:
+    key: value
+  rules:
+  #regex 匹配url的规则
+  - pattern: ".*"
+    key: common
+    tps: 200

@@ -12,6 +12,7 @@
         <module>apigateway-performance-collection</module>
         <module>apigateway-demo-api</module>
         <module>apigateway-rpc-genericinvoke</module>
+        <module>apigateway-flowlimit</module>
     </modules>
     <packaging>pom</packaging>
     <parent>
@@ -66,6 +67,11 @@
                 <version>2.7.4.1</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.9</version>
+            </dependency>
+            <dependency>
                 <groupId>org.dreamlife.hippocampus</groupId>
                 <artifactId>apigateway-performance-collection</artifactId>
                 <version>${project.version}</version>
@@ -78,6 +84,11 @@
             <dependency>
                 <groupId>org.dreamlife.hippocampus</groupId>
                 <artifactId>apigateway-rpc-genericinvoke</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dreamlife.hippocampus</groupId>
+                <artifactId>apigateway-flowlimit</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

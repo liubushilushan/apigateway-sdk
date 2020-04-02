@@ -39,5 +39,9 @@
             <groupId>org.dreamlife.hippocampus</groupId>
             <artifactId>apigateway-rpc-genericinvoke</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.dreamlife.hippocampus</groupId>
+            <artifactId>apigateway-flowlimit</artifactId>
+        </dependency>
     </dependencies>
 </project>
