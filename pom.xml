@@ -4,10 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.dreamlife.hippocampus</groupId>
+    <groupId>org.dreamlife.hippocampus</groupId>
     <artifactId>hippocampus-apigateway</artifactId>
     <version>1.0-SNAPSHOT</version>
     <modules>
+        <module>apigateway-server</module>
+        <module>apigateway-performance-collection</module>
+        <module>apigateway-demo-api</module>
     </modules>
     <packaging>pom</packaging>
     <parent>
@@ -60,6 +63,16 @@
                 <groupId>org.apache.dubbo</groupId>
                 <artifactId>dubbo-spring-boot-starter</artifactId>
                 <version>2.7.4.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dreamlife.hippocampus</groupId>
+                <artifactId>apigateway-performance-collection</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dreamlife.hippocampus</groupId>
+                <artifactId>apigateway-demo-api</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
