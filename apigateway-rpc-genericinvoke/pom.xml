@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>apigateway-server</artifactId>
+    <artifactId>apigateway-rpc-genericinvoke</artifactId>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -27,17 +27,6 @@
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-recipes</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.dreamlife.hippocampus</groupId>
-            <artifactId>apigateway-performance-collection</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.dreamlife.hippocampus</groupId>
-            <artifactId>apigateway-demo-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.dreamlife.hippocampus</groupId>
-            <artifactId>apigateway-rpc-genericinvoke</artifactId>
-        </dependency>
     </dependencies>
+
 </project>
