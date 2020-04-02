@@ -19,4 +19,16 @@ public class GenericInvokeQO {
     private String group;
     private List<String> parameterTypes;
     private List<Object> parameters;
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"interfaceClass\":'" + interfaceClass + '\'' +
+                ", \"methodName\":'" + methodName + '\'' +
+                ", \"version\":'" + version + '\'' +
+                ", \"group\":'" + group + '\'' +
+                ", \"parameterTypes\":" + parameterTypes +
+                ", \"parameters\":" + parameters +
+                '}';
+    }
 }

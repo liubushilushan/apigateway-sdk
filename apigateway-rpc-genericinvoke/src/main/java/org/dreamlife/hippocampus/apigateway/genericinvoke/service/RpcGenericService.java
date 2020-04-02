@@ -1,6 +1,7 @@
 package org.dreamlife.hippocampus.apigateway.genericinvoke.service;
 
 import org.dreamlife.hippocampus.apigateway.genericinvoke.model.GenericInvokeQO;
+import org.dreamlife.hippocampus.apigateway.genericinvoke.model.Response;
 
 import java.util.List;
 
@@ -12,5 +13,5 @@ import java.util.List;
  * @date 2020/4/1
  */
 public interface RpcGenericService {
-    Object invoke(GenericInvokeQO genericInvokeQO) throws Exception;
+    Response invoke(GenericInvokeQO genericInvokeQO);
 }

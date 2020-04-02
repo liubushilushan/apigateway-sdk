@@ -6,6 +6,7 @@ import org.apache.dubbo.config.ReferenceConfig;
 import org.apache.dubbo.config.context.ConfigManager;
 import org.apache.dubbo.rpc.service.GenericService;
 import org.dreamlife.hippocampus.apigateway.genericinvoke.model.GenericInvokeQO;
+import org.dreamlife.hippocampus.apigateway.genericinvoke.model.Response;
 import org.dreamlife.hippocampus.apigateway.genericinvoke.service.RpcGenericService;
 import org.springframework.stereotype.Service;
 
@@ -79,24 +80,27 @@ public class DubboGenericServiceImpl implements RpcGenericService {
                 futureTask = cache.get(cacheKey);
             }
         }
-        try {
-            return futureTask.get();
-        } catch (Exception e) {
-            log.error("get futureTask fail cause {}, task key is {} ",e.getMessage(),cacheKey,e);
-            throw e;
-        }
+        return futureTask.get();
     }
 
-    public Object invoke(GenericInvokeQO genericInvokeQO)
-            throws Exception {
-        GenericService service = getService(genericInvokeQO.getInterfaceClass(),
-                genericInvokeQO.getGroup(), genericInvokeQO.getVersion());
-        if(null == service){
-            return "rpc.invoke.fail on";
+    public Response invoke(GenericInvokeQO genericInvokeQO) {
+        GenericService service = null;
+        try{
+            service = getService(genericInvokeQO.getInterfaceClass(),
+                    genericInvokeQO.getGroup(), genericInvokeQO.getVersion());
+        }catch (Exception e){
+            log.warn("RPC服务调用失败: 找不到当前RPC接口的提供者, 请求实体：{}",genericInvokeQO);
+            return Response.fail(400,"RPC服务调用失败: 找不到当前RPC接口的提供者");
         }
-        Object result = service.$invoke(genericInvokeQO.getMethodName(),
-                genericInvokeQO.getParameterTypes().toArray(new String[0]), genericInvokeQO.getParameters().toArray());
-        return result;
+        try{
+            Object result = service.$invoke(genericInvokeQO.getMethodName(),
+                    genericInvokeQO.getParameterTypes().toArray(new String[0]), genericInvokeQO.getParameters().toArray());
+            return Response.ok(result);
+        }catch (Exception e){
+            log.warn("当前接口调用失败，不存在目标方法，请求实体：{}",genericInvokeQO);
+            return Response.fail(400, String.format("RPC服务调用失败: 不存在目标方法（ %s ）",genericInvokeQO.getMethodName()));
+        }
+
     }
 
 
