@@ -63,12 +63,10 @@ public class PerformanceSummaryService implements InitializingBean {
     }
 
     /**
-     * 当调用方没有注入Spring IoC容器中的PerformanceSummaryService实例
-     * 需要调用该兼容性的静态方法才能提交任务
-     * @param record
+     * 通过该方法可获取Spring Ioc容器中的PerformanceSummaryService对象的引用
      */
-    public static void compatibleSubmit(PerformanceRecord record){
-        INSTANCE.submit(record);
+    public static PerformanceSummaryService getInstance(){
+        return INSTANCE;
     }
 
     public void submit(PerformanceRecord record) {
