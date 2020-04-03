@@ -30,10 +30,12 @@ import java.util.concurrent.FutureTask;
 @Service
 public class DubboGenericServiceImpl implements RpcGenericService {
     private final ReferenceConfigCache cache;
+
     public DubboGenericServiceImpl() {
         cache = ReferenceConfigCache.getCache();
     }
 
+    @Override
     public Response invoke(GenericInvokeQO genericInvokeQO) {
         GenericService service = null;
         ReferenceConfig<GenericService> reference = null;
