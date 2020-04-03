@@ -29,7 +29,7 @@ public class RpcApiRecorder implements Filter {
             return invoker.invoke(invocation);
         } finally {
             long cost = System.currentTimeMillis() - time;
-            PerformanceSummaryService.compatibleSubmit(new PerformanceRecord().setResponseMills(cost).setApi(api));
+            PerformanceSummaryService.getInstance().submit(new PerformanceRecord().setResponseMills(cost).setApi(api));
         }
     }
 }
