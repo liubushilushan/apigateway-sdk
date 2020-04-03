@@ -1,4 +1,5 @@
 ## API网关设计
+[toc]
 
 ### （一）接口性能统计服务
 **模块：apigateway-performance-collection** 
@@ -18,7 +19,11 @@
 **模块：apigateway-rpc-genericinvoke**
 
 **模块简介：**
-该模块实现了泛化调用网关。网关对外提供了一个REST API接口，客户端通过调用该REST API就能调用RPC服务方提供的所有RPC接口。
+该模块实现了泛化调用网关。网关对外提供一个REST接口，客户端通过调用该REST接口就能调用RPC服务方提供的所有RPC接口。
+API文档详见 apigateway-rpc-genericinvoke模块下的README.md
+
+**设计细节：**
+- 泛化调用网关的设计很简单，在dubbo提供的RPC泛化调用接口上做了一层包装。
 
 ### （三）限流功能
 **模块：apigateway-flowlimit**
