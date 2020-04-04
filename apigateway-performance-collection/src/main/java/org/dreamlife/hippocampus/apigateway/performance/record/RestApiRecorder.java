@@ -1,17 +1,17 @@
 package org.dreamlife.hippocampus.apigateway.performance.record;
 
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
 import org.dreamlife.hippocampus.apigateway.performance.model.PerformanceRecord;
 import org.dreamlife.hippocampus.apigateway.performance.service.PerformanceSummaryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * 采集restApi的接口响应时间与调用次数
@@ -20,40 +20,20 @@ import javax.servlet.http.HttpServletRequest;
  * 如果每个请求都打日志的话，对磁盘IO会有很大压力
  */
 @Slf4j
-@Aspect
-public class RestApiRecorder {
+public class RestApiRecorder extends OncePerRequestFilter {
 
-    @Autowired
-    private PerformanceSummaryService performanceSummaryService;
-
-    @Pointcut(value = "@annotation(org.springframework.web.bind.annotation.RequestMapping)" +
-            "|| @annotation(org.springframework.web.bind.annotation.GetMapping) " +
-            "|| @annotation(org.springframework.web.bind.annotation.PostMapping)")
-    public void controllerLog() {
-    }
-
-    /**
-     * @param pjp
-     * @return
-     * @throws Throwable
-     */
-    @Around("controllerLog()")
-    public Object record(ProceedingJoinPoint pjp) throws Throwable {
+    @Override
+    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         long time = System.currentTimeMillis();
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         String api = request.getRequestURL().toString();
         try {
-            return pjp.proceed();
+            filterChain.doFilter(httpServletRequest,httpServletResponse);
         } finally {
             // 通过消息队列异步处理
             long cost = System.currentTimeMillis() - time;
-            performanceSummaryService.submit(new PerformanceRecord().setResponseMills(cost).setApi(api));
+            PerformanceSummaryService.getInstance().submit(new PerformanceRecord().setResponseMills(cost).setApi(api));
         }
     }
-
-
-
-
-
 }

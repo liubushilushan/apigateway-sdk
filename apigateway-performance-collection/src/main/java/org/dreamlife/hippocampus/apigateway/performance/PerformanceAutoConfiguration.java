@@ -2,9 +2,12 @@ package org.dreamlife.hippocampus.apigateway.performance;
 
 import org.dreamlife.hippocampus.apigateway.performance.record.RestApiRecorder;
 import org.dreamlife.hippocampus.apigateway.performance.service.PerformanceSummaryService;
-import org.dreamlife.hippocampus.apigateway.performance.sink.SinkPerformanceScheduler;
+import org.dreamlife.hippocampus.apigateway.performance.sink.SinkPerformanceDataTimer;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * 接口性能统计服务
@@ -32,23 +35,34 @@ public class PerformanceAutoConfiguration {
     }
 
     /**
-     * 设置切面来采集RestApi的接口响应时间与调用次数
-     * @return
-     */
-    @Bean
-    public RestApiRecorder restApiRecord(){
-        return new RestApiRecorder();
-    }
-
-    /**
      * 定时持久化各个API的性能指标
      * @return
      */
     @Bean
-    public SinkPerformanceScheduler sink(){
-        return new SinkPerformanceScheduler();
+    public SinkPerformanceDataTimer sink(){
+        return new SinkPerformanceDataTimer();
     }
 
-
+    /**
+     *
+     * 设置拦截器来采集RestApi的接口响应时间与调用次数
+     * @return
+     */
+    @Bean
+    @ConditionalOnClass(DispatcherServlet.class)
+    public RestApiRecorder restApiRecord(){
+        return new RestApiRecorder();
+    }
+    /**
+     *  WEB入口采集rest接口
+     * @return
+     */
+    @Bean
+    @ConditionalOnClass(DispatcherServlet.class)
+    public FilterRegistrationBean webFilterRegister() {
+        FilterRegistrationBean  bean = new FilterRegistrationBean(new RestApiRecorder());
+        bean.addUrlPatterns("/*");
+        return bean;
+    }
 
 }
