@@ -7,6 +7,7 @@ import com.ptc.board.flowlimit.router.DefaultLimiterFactoryImp;
 import org.dreamlife.hippocampus.apigateway.flowlimit.filter.RestApiFlowLimitFilter;
 import org.dreamlife.hippocampus.apigateway.flowlimit.response.RestFlowLimitResponseHandler;
 import org.dreamlife.hippocampus.apigateway.flowlimit.response.impl.SimpleRestFlowLimitResponseHandler;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,7 @@ import javax.servlet.annotation.WebFilter;
  * @date 2020/4/2
  */
 @Configuration
+@ConditionalOnProperty(prefix = "flowlimit")
 public class FlowLimitAutoConfiguration {
     /**
      * 配置信息
