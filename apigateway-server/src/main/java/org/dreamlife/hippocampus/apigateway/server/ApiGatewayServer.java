@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @date 2020/4/2
  */
 @EnableScheduling
-@EnableDubbo(scanBasePackages="org.dreamlife.hippocampus.apigateway.demo")
+@EnableDubbo
 @SpringBootApplication
 public class ApiGatewayServer {
     public static void main(String[] args) {
