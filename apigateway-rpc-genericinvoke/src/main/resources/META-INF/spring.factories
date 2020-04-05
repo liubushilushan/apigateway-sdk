@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.dreamlife.hippocampus.apigateway.genericinvoke.GenericInvokerAutoConfiguration
