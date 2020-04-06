@@ -6,15 +6,17 @@ import com.ptc.board.flowlimit.config.FlowLimiterConfig;
 import com.ptc.board.flowlimit.router.DefaultLimiterFactoryImp;
 import org.dreamlife.hippocampus.apigateway.flowlimit.filter.RestApiFlowLimitFilter;
 import org.dreamlife.hippocampus.apigateway.flowlimit.response.RestFlowLimitResponseHandler;
-import org.dreamlife.hippocampus.apigateway.flowlimit.response.impl.SimpleRestFlowLimitResponseHandler;
+import org.dreamlife.hippocampus.apigateway.flowlimit.response.impl.MinutelySummaryRestFlowLimitResponseHandler;
+import org.dreamlife.hippocampus.apigateway.flowlimit.response.impl.DefaultRestFlowLimitResponseHandler;
+import org.dreamlife.hippocampus.apigateway.performance.service.PerformanceSummaryService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import sun.reflect.generics.tree.Tree;
-
-import javax.servlet.annotation.WebFilter;
 
 
 /**
@@ -27,7 +29,6 @@ import javax.servlet.annotation.WebFilter;
  * @date 2020/4/2
  */
 @Configuration
-@ConditionalOnProperty(name = "flowlimit.env.key")
 public class FlowLimitAutoConfiguration {
     /**
      * 配置信息
@@ -52,22 +53,32 @@ public class FlowLimitAutoConfiguration {
     }
 
     /**
-     *  处理被限流的请求
+     * 当包含 apigateway-performance-collection 包时,选择MinutelySummaryRestFlowLimitResponseHandler作为被限流接口的处理器
      * @return
      */
     @Bean
+    @ConditionalOnClass(PerformanceSummaryService.class)
+    public RestFlowLimitResponseHandler summaryRestFlowLimitResponseHandler(){
+        return new MinutelySummaryRestFlowLimitResponseHandler();
+    }
+
+    /**
+     * 当项目缺少RestFlowLimitResponseHandler时，会初始化缺省的限流处理器
+     * @return
+     */
+    @Bean
+    @ConditionalOnMissingBean
     public RestFlowLimitResponseHandler restFlowLimitResponseHandler(){
-        return new SimpleRestFlowLimitResponseHandler();
+        return new DefaultRestFlowLimitResponseHandler();
     }
 
     /**
      *  注册限流WebFilter，在Web入口处放置拦截器
      * @param limitService
-     * @param restFlowLimitResponseHandler
      * @return
      */
     @Bean
-    public FilterRegistrationBean webFilterRegister(FlowLimiterService limitService, RestFlowLimitResponseHandler restFlowLimitResponseHandler) {
+    public FilterRegistrationBean restApiFlowLimitFilterRegister(FlowLimiterService limitService,RestFlowLimitResponseHandler restFlowLimitResponseHandler) {
         FilterRegistrationBean  bean = new FilterRegistrationBean(new RestApiFlowLimitFilter(limitService,restFlowLimitResponseHandler));
         bean.addUrlPatterns("/*");
         return bean;

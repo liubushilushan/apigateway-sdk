@@ -35,7 +35,8 @@ public class PerformanceAutoConfiguration {
     }
 
     /**
-     * 定时持久化各个API的性能指标
+     * 定时器
+     * 每分钟持久化各个API的性能指标
      * @return
      */
     @Bean
@@ -44,12 +45,12 @@ public class PerformanceAutoConfiguration {
     }
 
     /**
-     *  WEB入口采集rest接口
+     *  WEB入口设置Filter采集rest接口
      * @return
      */
     @Bean
     @ConditionalOnClass(DispatcherServlet.class)
-    public FilterRegistrationBean webFilterRegister() {
+    public FilterRegistrationBean restApiRecorderFilterRegister() {
         FilterRegistrationBean  bean = new FilterRegistrationBean(new RestApiRecorder());
         bean.addUrlPatterns("/*");
         return bean;

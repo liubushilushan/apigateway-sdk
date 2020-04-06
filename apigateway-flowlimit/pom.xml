@@ -29,5 +29,10 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.dreamlife.hippocampus</groupId>
+            <artifactId>apigateway-performance-collection</artifactId>
+        </dependency>
+
     </dependencies>
 </project>

@@ -36,7 +36,7 @@ public class RestApiFlowLimitFilter extends OncePerRequestFilter {
         } else {
             // 超过阈值的流量在这里被拦截
             // 返回友好信息
-            restFlowLimitResponseHandler.responseTo(httpServletResponse);
+            restFlowLimitResponseHandler.responseTo(httpServletRequest,httpServletResponse);
         }
     }
 }

@@ -3,6 +3,7 @@ package org.dreamlife.hippocampus.apigateway.flowlimit.response.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.dreamlife.hippocampus.apigateway.flowlimit.response.RestFlowLimitResponseHandler;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -14,11 +15,11 @@ import java.io.IOException;
  * @date 2020/4/2
  */
 @Slf4j
-public class SimpleRestFlowLimitResponseHandler implements RestFlowLimitResponseHandler {
+public class DefaultRestFlowLimitResponseHandler implements RestFlowLimitResponseHandler {
     private static final String SYSTEM_BUSY_WORD = "{\"code\":\"system.busy\",\"status\":513}";
     @Override
-    public void responseTo(HttpServletResponse response) {
-        // 打印
+    public void responseTo(HttpServletRequest request, HttpServletResponse response) {
+        // 每条被限流的接口都会打印一条日志
         log.error("system busy");
         response.setStatus(513);
         try {

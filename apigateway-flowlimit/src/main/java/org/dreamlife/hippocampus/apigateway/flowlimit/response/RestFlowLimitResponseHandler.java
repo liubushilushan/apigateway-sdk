@@ -1,5 +1,6 @@
 package org.dreamlife.hippocampus.apigateway.flowlimit.response;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -10,5 +11,5 @@ import javax.servlet.http.HttpServletResponse;
  * @date 2020/4/2
  */
 public interface RestFlowLimitResponseHandler {
-    void responseTo(HttpServletResponse response);
+    void responseTo(HttpServletRequest request, HttpServletResponse response);
 }

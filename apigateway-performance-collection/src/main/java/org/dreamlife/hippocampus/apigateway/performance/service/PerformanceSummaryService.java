@@ -44,14 +44,24 @@ public class PerformanceSummaryService implements InitializingBean {
                         }
                 );
     }
+
+    /**
+     * 通过该方法可获取Spring Ioc容器中的PerformanceSummaryService对象的引用
+     */
+    public static PerformanceSummaryService getInstance() {
+        return INSTANCE;
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         INSTANCE = this;
     }
 
+
     /**
      * 路由
      * 使用简单的取余算法进行路由
+     *
      * @param key
      * @return
      */
@@ -61,13 +71,6 @@ public class PerformanceSummaryService implements InitializingBean {
             offset = Math.abs(key.hashCode()) % concurrencyLevel;
         }
         return nodes.get(offset);
-    }
-
-    /**
-     * 通过该方法可获取Spring Ioc容器中的PerformanceSummaryService对象的引用
-     */
-    public static PerformanceSummaryService getInstance(){
-        return INSTANCE;
     }
 
     public void submit(ApiIndicatorRecord record) {
@@ -93,7 +96,7 @@ public class PerformanceSummaryService implements InitializingBean {
                         }
                 )
                 .flatMap(List::stream)
-                .forEach( report ->{
+                .forEach(report -> {
                     log.info(report.getResult());
                 });
     }
