@@ -29,19 +29,19 @@
         </dependency>
         <dependency>
             <groupId>org.dreamlife.hippocampus</groupId>
-            <artifactId>apigateway-performance-collection</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.dreamlife.hippocampus</groupId>
             <artifactId>apigateway-demo-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.dreamlife.hippocampus</groupId>
-            <artifactId>apigateway-rpc-genericinvoke</artifactId>
+            <artifactId>apigateway-rpc-genericinvoke-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>org.dreamlife.hippocampus</groupId>
-            <artifactId>apigateway-flowlimit</artifactId>
+            <artifactId>apigateway-flowlimit-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.dreamlife.hippocampus</groupId>
+            <artifactId>apigateway-performance-summary-starter</artifactId>
         </dependency>
     </dependencies>
 </project>

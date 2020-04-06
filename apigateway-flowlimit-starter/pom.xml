@@ -9,18 +9,30 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>apigateway-performance-collection</artifactId>
+    <artifactId>apigateway-flowlimit-starter</artifactId>
+
     <dependencies>
+        <dependency>
+            <groupId>com.ptc</groupId>
+            <artifactId>ptc-board-flowlimit-client</artifactId>
+            <version>1.0.0-RELEASE</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/src/main/resources/lib/ptc-board-flowlimit-client-1.0.0-RELEASE.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.apache.dubbo</groupId>
-            <artifactId>dubbo-spring-boot-starter</artifactId>
-            <optional>true</optional>
-        </dependency>
-    </dependencies>
 
+        <dependency>
+            <groupId>org.dreamlife.hippocampus</groupId>
+            <artifactId>apigateway-performance-summary-starter</artifactId>
+        </dependency>
+
+    </dependencies>
 </project>
