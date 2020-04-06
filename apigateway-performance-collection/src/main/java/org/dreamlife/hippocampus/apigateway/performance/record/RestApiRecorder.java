@@ -27,7 +27,7 @@ public class RestApiRecorder extends OncePerRequestFilter {
         long time = System.currentTimeMillis();
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
-        String api = request.getRequestURL().toString();
+        String api = request.getRequestURI();
         try {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
         } finally {

@@ -53,6 +53,12 @@ public class PerformanceAutoConfiguration {
     public FilterRegistrationBean restApiRecorderFilterRegister() {
         FilterRegistrationBean  bean = new FilterRegistrationBean(new RestApiRecorder());
         bean.addUrlPatterns("/*");
+        /**
+         * 此处说明：
+         * 由于设计上只想去统计正常接口的响应时长，而考虑部分拦截器会直接拦截掉OPTION请求、限流部分接口。
+         * 若将接口性能统计拦截器位于其他拦截器之前，那除了统计正常接口的响应时长，该拦截器还统计了被拦截或限流的接口的响应时长，造成与实际结果的偏差
+          */
+        bean.setOrder(Integer.MAX_VALUE);
         return bean;
     }
 
