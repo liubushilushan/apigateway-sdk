@@ -44,16 +44,6 @@ public class PerformanceAutoConfiguration {
     }
 
     /**
-     *
-     * 设置拦截器来采集RestApi的接口响应时间与调用次数
-     * @return
-     */
-    @Bean
-    @ConditionalOnClass(DispatcherServlet.class)
-    public RestApiRecorder restApiRecord(){
-        return new RestApiRecorder();
-    }
-    /**
      *  WEB入口采集rest接口
      * @return
      */

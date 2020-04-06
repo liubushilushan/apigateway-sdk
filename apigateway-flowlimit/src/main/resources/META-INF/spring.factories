@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.dreamlife.hippocampus.apigateway.demo.FlowLimitAutoConfiguration
+org.dreamlife.hippocampus.apigateway.flowlimit.FlowLimitAutoConfiguration

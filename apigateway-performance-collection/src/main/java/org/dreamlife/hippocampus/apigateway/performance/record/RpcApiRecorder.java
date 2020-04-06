@@ -5,7 +5,7 @@ import com.alibaba.dubbo.common.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.common.extension.Activate;
 import org.apache.dubbo.rpc.*;
-import org.dreamlife.hippocampus.apigateway.performance.model.PerformanceRecord;
+import org.dreamlife.hippocampus.apigateway.performance.model.ApiIndicatorRecord;
 import org.dreamlife.hippocampus.apigateway.performance.service.PerformanceSummaryService;
 
 /**
@@ -29,7 +29,19 @@ public class RpcApiRecorder implements Filter {
             return invoker.invoke(invocation);
         } finally {
             long cost = System.currentTimeMillis() - time;
-            PerformanceSummaryService.getInstance().submit(new PerformanceRecord().setResponseMills(cost).setApi(api));
+            // 统计接口平均响应时间
+            PerformanceSummaryService.getInstance().submit(new ApiIndicatorRecord()
+                    .setApi(api)
+                    .setIndicatorName("averageTimeCost")
+                    .setIndicatorUnit("ms")
+                    .setOperation(ApiIndicatorRecord.Operation.AVERAGE)
+                    .setIndicatorValue(cost));
+            // 统计接口被调用次数
+            PerformanceSummaryService.getInstance().submit(new ApiIndicatorRecord()
+                    .setApi(api)
+                    .setIndicatorName("invokeCount")
+                    .setIndicatorUnit("")
+                    .setOperation(ApiIndicatorRecord.Operation.COUNT));
         }
     }
 }

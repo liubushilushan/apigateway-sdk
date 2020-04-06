@@ -1,7 +1,7 @@
 package org.dreamlife.hippocampus.apigateway.performance.record;
 
 import lombok.extern.slf4j.Slf4j;
-import org.dreamlife.hippocampus.apigateway.performance.model.PerformanceRecord;
+import org.dreamlife.hippocampus.apigateway.performance.model.ApiIndicatorRecord;
 import org.dreamlife.hippocampus.apigateway.performance.service.PerformanceSummaryService;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -29,11 +29,31 @@ public class RestApiRecorder extends OncePerRequestFilter {
         HttpServletRequest request = attributes.getRequest();
         String api = request.getRequestURL().toString();
         try {
-            filterChain.doFilter(httpServletRequest,httpServletResponse);
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
         } finally {
+            if(404 == httpServletResponse.getStatus()){
+                // 不统计404的接口，否则会有内存泄露的风险
+                return;
+            }
+            if("/error".equals(api)||"/favicon.ico".equals(api)){
+                // 不统计error或图标的接口，没有意义
+                return;
+            }
             // 通过消息队列异步处理
             long cost = System.currentTimeMillis() - time;
-            PerformanceSummaryService.getInstance().submit(new PerformanceRecord().setResponseMills(cost).setApi(api));
+            // 统计接口平均响应时间
+            PerformanceSummaryService.getInstance().submit(new ApiIndicatorRecord()
+                    .setApi(api)
+                    .setIndicatorName("averageTimeCost")
+                    .setIndicatorUnit("ms")
+                    .setOperation(ApiIndicatorRecord.Operation.AVERAGE)
+                    .setIndicatorValue(cost));
+            // 统计接口被调用次数
+            PerformanceSummaryService.getInstance().submit(new ApiIndicatorRecord()
+                    .setApi(api)
+                    .setIndicatorName("invokeCount")
+                    .setIndicatorUnit("")
+                    .setOperation(ApiIndicatorRecord.Operation.COUNT));
         }
     }
 }

@@ -27,7 +27,7 @@ import javax.servlet.annotation.WebFilter;
  * @date 2020/4/2
  */
 @Configuration
-@ConditionalOnProperty(prefix = "flowlimit")
+@ConditionalOnProperty(name = "flowlimit.env.key")
 public class FlowLimitAutoConfiguration {
     /**
      * 配置信息

@@ -2,7 +2,8 @@ package org.dreamlife.hippocampus.apigateway.performance.service;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.dreamlife.hippocampus.apigateway.performance.model.PerformanceRecord;
+import org.dreamlife.hippocampus.apigateway.performance.model.ApiIndicatorRecord;
+import org.dreamlife.hippocampus.apigateway.performance.model.ApiIndicatorReport;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ public class PerformanceSummaryService implements InitializingBean {
         return INSTANCE;
     }
 
-    public void submit(PerformanceRecord record) {
+    public void submit(ApiIndicatorRecord record) {
         ServiceNode node = route(record.getApi());
         node.submit(record);
     }
@@ -79,11 +80,22 @@ public class PerformanceSummaryService implements InitializingBean {
      */
     public void sink() {
         IntStream.range(0, concurrencyLevel)
-                .forEach(
+                .boxed()
+                .map(
                         (offset) -> {
-                            nodes.get(offset).sink();
+                            List<ApiIndicatorReport> apiIndicatorReports = null;
+                            try {
+                                apiIndicatorReports = nodes.get(offset).report().get();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            return apiIndicatorReports;
                         }
-                );
+                )
+                .flatMap(List::stream)
+                .forEach( report ->{
+                    log.info(report.getResult());
+                });
     }
 
 

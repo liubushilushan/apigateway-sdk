@@ -1,6 +1,7 @@
 package org.dreamlife.hippocampus.apigateway.performance.sink;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.dreamlife.hippocampus.apigateway.performance.service.PerformanceSummaryService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import java.util.concurrent.*;
  * @email johnliu1122@163.com
  * @date 2020/3/30
  */
+@Slf4j
 public class SinkPerformanceDataTimer implements InitializingBean {
     private final ScheduledExecutorService timer;
 
@@ -28,12 +30,12 @@ public class SinkPerformanceDataTimer implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         LocalDateTime now = LocalDateTime.now();
-        // 每分钟打印一次接口性能数据
         int initialDelayInSecond = 60 - now.getSecond();
         timer.scheduleAtFixedRate(() ->
                 {
                     PerformanceSummaryService.getInstance().sink();
-                }, initialDelayInSecond, 1, TimeUnit.MINUTES
+                }, initialDelayInSecond, 60, TimeUnit.SECONDS
         );
+        log.info("Thread [performance-timer-sink] begin to sink every minute...");
     }
 }
