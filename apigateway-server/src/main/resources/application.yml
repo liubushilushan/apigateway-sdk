@@ -13,10 +13,8 @@ dubbo:
     name: dubbo
     port: 20881
 flowlimit:
-  env:
-    key: value
   rules:
   #regex 匹配url的规则
   - pattern: ".*"
-    key: common
-    tps: 200
+    key: group1
+    tps: 1

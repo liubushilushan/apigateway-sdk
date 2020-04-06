@@ -17,10 +17,7 @@
 **配置demo：** 
 ```yaml
 flowlimit:
-  env:
-    key: value
   rules:
-  #regex 匹配url的规则
   - pattern: ".*"
     key: group1
     tps: 200
