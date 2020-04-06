@@ -23,8 +23,8 @@ public class ApiIndicatorSummary {
     private long summaryValue;
     // 统计次数
     private long count;
-    // 上次更新时间
-    private String lastSinkTime;
+    // 上次重置时间
+    private long lastResetTime;
     // 操作
     private ApiIndicatorRecord.Operation operation;
 }

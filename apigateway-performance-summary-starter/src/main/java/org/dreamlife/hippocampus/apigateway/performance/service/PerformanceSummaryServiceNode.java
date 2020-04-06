@@ -7,7 +7,9 @@ import org.dreamlife.hippocampus.apigateway.performance.model.ApiIndicatorRecord
 import org.dreamlife.hippocampus.apigateway.performance.model.ApiIndicatorReport;
 import org.dreamlife.hippocampus.apigateway.performance.model.ApiIndicatorSummary;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -24,13 +26,13 @@ import java.util.stream.Collectors;
  * @date 2020/3/31
  */
 @Slf4j
-public class ServiceNode {
+public class PerformanceSummaryServiceNode {
     // eg. api -> [{"summary":10,"invokeCount":5}]
     private final Map<String, Map<String, ApiIndicatorSummary>> segment;
 
     private final ExecutorService executor;
 
-    public ServiceNode(ThreadFactory factory) {
+    public PerformanceSummaryServiceNode(ThreadFactory factory) {
         executor = new ThreadPoolExecutor(
                 1, 1,
                 0, TimeUnit.MILLISECONDS
@@ -55,6 +57,7 @@ public class ServiceNode {
                         .setIndicatorName(record.getIndicatorName())
                         .setIndicatorUnit(record.getIndicatorUnit())
                         .setOperation(record.getOperation())
+                        .setLastResetTime(System.currentTimeMillis())
                         .setSummaryValue(0);
                 indicators.put(record.getIndicatorName(), summary);
             }
@@ -71,33 +74,32 @@ public class ServiceNode {
         });
     }
 
-    public Future<List<ApiIndicatorReport>> report() {
+    public Future<List<ApiIndicatorReport>> getAndReset() {
         Callable sink = () -> {
-            String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            long now = System.currentTimeMillis();
+            String formattedNow = LocalDateTime.ofInstant(Instant.ofEpochMilli(now), ZoneId.systemDefault())
+                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             List<ApiIndicatorReport> reports = segment.keySet()
                     .stream()
                     .map(
-                            api -> {
-                                Map<String, ApiIndicatorSummary> indicators = segment.get(api);
-                                return indicators.values().stream()
-                                        .filter(summary -> summary.getCount() > 0)
-                                        .map(summary -> assemble(summary, now))
-                                        .collect(Collectors.toList())
-                                        ;
-                            }
+                            api -> segment.get(api)
+                                    .values()
+                                    .stream()
+                                    .filter(summary -> summary.getCount() > 0)
+                                    .map(summary -> assemble(summary, formattedNow))
+                                    .collect(Collectors.toList())
                     )
                     .flatMap(List::stream)
                     .collect(Collectors.toList());
 
-            // 清空累计值
+            // 重置累计值
             reports.stream()
                     .forEach(
-                            report -> {
-                                ApiIndicatorSummary summary = segment.get(report.getApi()).get(report.getIndicatorName());
-                                summary.setCount(0)
-                                        .setSummaryValue(0)
-                                        .setLastSinkTime(now);
-                            }
+                            report -> segment.get(report.getApi())
+                                    .get(report.getIndicatorName())
+                                    .setCount(0)
+                                    .setSummaryValue(0)
+                                    .setLastResetTime(now)
                     );
 
             return reports;
@@ -106,7 +108,7 @@ public class ServiceNode {
         return executor.submit(sink);
     }
 
-    private ApiIndicatorReport assemble(ApiIndicatorSummary summary, String currentTime) {
+    private ApiIndicatorReport assemble(ApiIndicatorSummary summary, String now) {
         long count = summary.getCount();
         if (count <= 0) {
             return null;
@@ -123,8 +125,12 @@ public class ServiceNode {
                 displayValue = summary.getCount() + "";
                 break;
         }
+        String lastResetTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(summary.getLastResetTime()), ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+
         String result = String.format("API: %s, %s: %s %s, during %s , %s",
-                summary.getApi(), summary.getIndicatorName(), displayValue, summary.getIndicatorUnit(), summary.getLastSinkTime(), currentTime);
+                summary.getApi(), summary.getIndicatorName(), displayValue, summary.getIndicatorUnit(), lastResetTime, now);
 
         return new ApiIndicatorReport()
                 .setApi(summary.getApi())

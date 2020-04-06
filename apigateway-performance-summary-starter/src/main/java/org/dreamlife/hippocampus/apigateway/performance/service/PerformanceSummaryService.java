@@ -29,7 +29,7 @@ public class PerformanceSummaryService implements InitializingBean {
     private final int concurrencyLevel;
 
 
-    private final List<ServiceNode> nodes;
+    private final List<PerformanceSummaryServiceNode> nodes;
 
     public PerformanceSummaryService(int concurrencyLevel) {
         // 设置并发度
@@ -40,7 +40,7 @@ public class PerformanceSummaryService implements InitializingBean {
         IntStream.range(0, concurrencyLevel)
                 .forEach(
                         (offset) -> {
-                            nodes.add(new ServiceNode(factory));
+                            nodes.add(new PerformanceSummaryServiceNode(factory));
                         }
                 );
     }
@@ -65,7 +65,7 @@ public class PerformanceSummaryService implements InitializingBean {
      * @param key
      * @return
      */
-    private ServiceNode route(String key) {
+    private PerformanceSummaryServiceNode route(String key) {
         int offset = 0;
         if (key != null) {
             offset = Math.abs(key.hashCode()) % concurrencyLevel;
@@ -74,21 +74,21 @@ public class PerformanceSummaryService implements InitializingBean {
     }
 
     public void submit(ApiIndicatorRecord record) {
-        ServiceNode node = route(record.getApi());
+        PerformanceSummaryServiceNode node = route(record.getApi());
         node.submit(record);
     }
 
     /**
-     * 持久化性能指标
+     * 获取并重置性能指标
      */
-    public void sink() {
+    public void sinkAndReset() {
         IntStream.range(0, concurrencyLevel)
                 .boxed()
                 .map(
                         (offset) -> {
                             List<ApiIndicatorReport> apiIndicatorReports = null;
                             try {
-                                apiIndicatorReports = nodes.get(offset).report().get();
+                                apiIndicatorReports = nodes.get(offset).getAndReset().get();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }

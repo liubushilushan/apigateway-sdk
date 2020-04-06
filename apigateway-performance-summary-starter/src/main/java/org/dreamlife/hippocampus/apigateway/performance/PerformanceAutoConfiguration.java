@@ -36,7 +36,7 @@ public class PerformanceAutoConfiguration {
 
     /**
      * 定时器
-     * 每分钟持久化各个API的性能指标
+     * 每分钟持久化并重置接口的性能指标
      * @return
      */
     @Bean
@@ -55,8 +55,9 @@ public class PerformanceAutoConfiguration {
         bean.addUrlPatterns("/*");
         /**
          * 此处说明：
-         * 由于设计上只想去统计正常接口的响应时长，而考虑部分拦截器会直接拦截掉OPTION请求、限流部分接口。
+         * 由于设计上只想去统计正常接口的响应时长，考虑到部分拦截器会直接拦截掉OPTION请求、限流部分接口。
          * 若将接口性能统计拦截器位于其他拦截器之前，那除了统计正常接口的响应时长，该拦截器还统计了被拦截或限流的接口的响应时长，造成与实际结果的偏差
+         * 因此此处将拦截器置于拦截器链的结尾
           */
         bean.setOrder(Integer.MAX_VALUE);
         return bean;

@@ -4,8 +4,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.dreamlife.hippocampus.apigateway.performance.service.PerformanceSummaryService;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.*;
@@ -33,9 +31,9 @@ public class SinkPerformanceDataTimer implements InitializingBean {
         int initialDelayInSecond = 60 - now.getSecond();
         timer.scheduleAtFixedRate(() ->
                 {
-                    PerformanceSummaryService.getInstance().sink();
+                    PerformanceSummaryService.getInstance().sinkAndReset();
                 }, initialDelayInSecond, 60, TimeUnit.SECONDS
         );
-        log.info("Thread [performance-timer-sink] begin to sink every minute...");
+        log.info("Thread [performance-timer-sinkAndReset] begin to sinkAndReset every minute...");
     }
 }
