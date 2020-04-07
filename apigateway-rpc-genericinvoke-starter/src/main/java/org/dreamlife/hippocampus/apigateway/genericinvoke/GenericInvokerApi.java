@@ -1,6 +1,8 @@
 package org.dreamlife.hippocampus.apigateway.genericinvoke;
 
 import com.google.common.base.Strings;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dreamlife.hippocampus.apigateway.genericinvoke.model.GenericInvokeQO;
 import org.dreamlife.hippocampus.apigateway.genericinvoke.model.Response;
 import org.dreamlife.hippocampus.apigateway.genericinvoke.service.RpcGenericService;
@@ -20,10 +22,11 @@ import java.util.List;
  * @date 2020/4/1
  */
 @RestController
+@Api(value = "GenericInvokerApi", tags = {"泛化调用"})
 public class GenericInvokerApi {
     @Autowired
     private RpcGenericService rpcGenericService;
-
+    @ApiOperation("泛化调用接口")
     @PostMapping("/api/gateway.do")
     public Response invoke(@RequestBody GenericInvokeQO genericInvokeQO) {
         String interfaceClass = genericInvokeQO.getInterfaceClass();
