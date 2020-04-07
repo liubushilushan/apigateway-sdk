@@ -34,7 +34,7 @@ public class Swagger2Configuration {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("泛化调用接口文档")
-                .description("泛化调用接口文档, 源码传送门：https://github.com/johnliu1122/hippocampus-apigateway/tree/release-ibuscloud")
+                .description("泛化调用接口文档，源码传送门：https://github.com/johnliu1122/hippocampus-apigateway/tree/release-ibuscloud")
                 .version("1.0")
                 .build();
     }
