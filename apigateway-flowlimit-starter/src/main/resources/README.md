@@ -12,7 +12,9 @@
 - 由于服务基于rateLimiter，所以每次限流的间隔是1秒，限流的算法是令牌桶算法。
 
 **接入方式：**
-用户需要添加对该SDK的依赖，同时添加一些配置
+用户需要添加对该SDK的依赖，同时添加一些配置。
+- 如果项目中包含了apigateway-performance-summary-starter的依赖，则每分钟统计并打印被限流的接口以及相应的限流次数。
+- 如果项目中不包含apigateway-performance-summary-starter的依赖，则接口每一次被限流就会打印一次日志。
 
 **配置demo：** 
 ```yaml

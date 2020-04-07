@@ -20,7 +20,7 @@ public class DefaultRestFlowLimitResponseHandler implements RestFlowLimitRespons
     @Override
     public void responseTo(HttpServletRequest request, HttpServletResponse response) {
         // 每条被限流的接口都会打印一条日志
-        log.error("system busy");
+        log.info("system busy at uri {}",request.getRequestURI());
         response.setStatus(513);
         try {
             response.getWriter().print(SYSTEM_BUSY_WORD);

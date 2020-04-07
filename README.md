@@ -47,6 +47,9 @@ API文档详见 apigateway-rpc-genericinvoke-starter模块下的README.md
 
 **接入方式：**
 用户需要添加对该SDK的依赖，同时添加一些配置，具体接入方式详见apigateway-flowlimit-starter模块下的README.md
+- 如果项目中包含了apigateway-performance-summary-starter的依赖，则每分钟统计并打印被限流的接口以及相应的次数。
+- 如果项目中不包含apigateway-performance-summary-starter的依赖，则接口每一次被限流就会打印一次日志。
+
 
 
 
