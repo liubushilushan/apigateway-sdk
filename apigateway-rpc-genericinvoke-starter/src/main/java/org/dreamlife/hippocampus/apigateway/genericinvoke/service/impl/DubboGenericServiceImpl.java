@@ -12,11 +12,15 @@ import org.apache.dubbo.rpc.service.GenericService;
 import org.dreamlife.hippocampus.apigateway.genericinvoke.model.GenericInvokeQO;
 import org.dreamlife.hippocampus.apigateway.genericinvoke.model.Response;
 import org.dreamlife.hippocampus.apigateway.genericinvoke.service.RpcGenericService;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Dubbo泛化服务
@@ -29,10 +33,11 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class DubboGenericServiceImpl implements RpcGenericService, InitializingBean {
+public class DubboGenericServiceImpl implements RpcGenericService, InitializingBean, ApplicationContextAware {
     private final ReferenceConfigCache cache;
     private ApplicationConfig applicationConfig;
     private RegistryConfig registryConfig;
+    private ApplicationContext applicationContext;
 
     public DubboGenericServiceImpl() {
         cache = ReferenceConfigCache.getCache();
@@ -81,30 +86,31 @@ public class DubboGenericServiceImpl implements RpcGenericService, InitializingB
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        ApplicationConfig application =  ConfigManager.getInstance().getApplication()
-                .orElseGet(() -> {
-                    ApplicationConfig applicationConfig = new ApplicationConfig();
-                    applicationConfig.refresh();
-                    return applicationConfig;
-                });
-        if(application.isValid()){
-           this.applicationConfig = application;
-        }else{
+        Map<String, ApplicationConfig> applicationConfigMap = applicationContext.getBeansOfType(ApplicationConfig.class, false, false);
+        if(applicationConfigMap.size()==1){
+            ApplicationConfig applicationConfig = applicationConfigMap.values().iterator().next();
+            if(applicationConfig.isValid()){
+                this.applicationConfig = applicationConfig;
+            }
+        }
+        if(this.applicationConfig==null){
             log.error("缺少配置： dubbo.application.name, 这将会导致泛化调用失败");
         }
-        List<RegistryConfig> registryConfigs = ConfigManager.getInstance().getDefaultRegistries()
-                .filter(CollectionUtils::isNotEmpty)
-                .orElseGet(() -> {
-                    RegistryConfig registryConfig = new RegistryConfig();
-                    registryConfig.refresh();
-                    return Arrays.asList(registryConfig);
-                });
-        RegistryConfig defaultRegistryConfig = registryConfigs.get(0);
 
-        if(defaultRegistryConfig.isValid()){
-            this.registryConfig = defaultRegistryConfig;
-        }else{
+        Map<String, RegistryConfig> registryConfigMap = applicationContext.getBeansOfType(RegistryConfig.class, false, false);
+        if(registryConfigMap.size()>=1){
+            RegistryConfig registryConfig = registryConfigMap.values().iterator().next();
+            if(registryConfig.isValid()){
+                this.registryConfig = registryConfig;
+            }
+        }
+        if(this.registryConfig==null){
             log.error("缺少配置： dubbo.registry.address, 这将会导致泛化调用失败");
         }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }
