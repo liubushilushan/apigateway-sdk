@@ -60,7 +60,7 @@ public class PerformanceSummaryService implements InitializingBean {
 
     /**
      * 路由
-     * 使用简单的取余算法进行路由
+     * 使用简单的取模算法进行路由
      *
      * @param key
      * @return
@@ -68,11 +68,10 @@ public class PerformanceSummaryService implements InitializingBean {
     private PerformanceSummaryServiceNode route(String key) {
         int offset = 0;
         if (key != null) {
-            offset = Math.abs(key.hashCode()) % concurrencyLevel;
+            offset = Math.floorMod(key.hashCode(),concurrencyLevel);
         }
         return nodes.get(offset);
     }
-
     public void submit(ApiIndicatorRecord record) {
         PerformanceSummaryServiceNode node = route(record.getApi());
         node.submit(record);
@@ -82,20 +81,18 @@ public class PerformanceSummaryService implements InitializingBean {
      * 获取并重置性能指标
      */
     public void sinkAndReset() {
-        IntStream.range(0, concurrencyLevel)
-                .boxed()
+        nodes.stream()
                 .map(
-                        (offset) -> {
+                        node -> {
                             List<ApiIndicatorReport> apiIndicatorReports = null;
                             try {
-                                apiIndicatorReports = nodes.get(offset).getAndReset().get();
+                                apiIndicatorReports = node.getAndReset().get();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                             return apiIndicatorReports;
                         }
-                )
-                .flatMap(List::stream)
+                ).flatMap(List::stream)
                 .forEach(report -> {
                     log.info(report.getResult());
                 });
