@@ -8,6 +8,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ThreadFactory;
 import java.util.stream.IntStream;
 
@@ -92,7 +93,9 @@ public class PerformanceSummaryService implements InitializingBean {
                             }
                             return apiIndicatorReports;
                         }
-                ).flatMap(List::stream)
+                )
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
                 .forEach(report -> {
                     log.info(report.getResult());
                 });
