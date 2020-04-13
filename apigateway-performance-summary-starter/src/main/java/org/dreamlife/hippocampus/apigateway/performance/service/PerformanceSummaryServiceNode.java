@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -74,16 +75,15 @@ public class PerformanceSummaryServiceNode {
         });
     }
 
-    public Future<List<ApiIndicatorReport>> getAndReset() {
-        Callable sink = () -> {
-            long now = System.currentTimeMillis();
-            String formattedNow = LocalDateTime.ofInstant(Instant.ofEpochMilli(now), ZoneId.systemDefault())
+    public CompletableFuture<List<ApiIndicatorReport>> getAndReset() {
+        Supplier<List<ApiIndicatorReport>> getAndResetTask = () -> {
+            Instant now = Instant.now();
+            String formattedNow = LocalDateTime.ofInstant(now, ZoneId.systemDefault())
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            List<ApiIndicatorReport> reports = segment.keySet()
-                    .stream()
+            // 获取接口统计结果
+            List<ApiIndicatorReport> reports =  segment.entrySet().stream()
                     .map(
-                            api -> segment.get(api)
-                                    .values()
+                            e -> e.getValue().values()
                                     .stream()
                                     .filter(summary -> summary.getCount() > 0)
                                     .map(summary -> assemble(summary, formattedNow))
@@ -99,13 +99,12 @@ public class PerformanceSummaryServiceNode {
                                     .get(report.getIndicatorName())
                                     .setCount(0)
                                     .setSummaryValue(0)
-                                    .setLastResetTime(now)
+                                    .setLastResetTime(now.toEpochMilli())
                     );
 
             return reports;
         };
-        // 给每个线程服务都提交一个sink任务
-        return executor.submit(sink);
+        return CompletableFuture.supplyAsync(getAndResetTask,executor);
     }
 
     private ApiIndicatorReport assemble(ApiIndicatorSummary summary, String now) {
