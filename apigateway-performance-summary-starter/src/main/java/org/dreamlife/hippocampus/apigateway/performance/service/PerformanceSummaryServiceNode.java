@@ -46,22 +46,18 @@ public class PerformanceSummaryServiceNode {
         executor.submit(() -> {
             final String api = record.getApi();
             // 简单累加性能值
-            Map<String, ApiIndicatorSummary> indicators = segment.get(record.getApi());
-            if (null == indicators) {
-                indicators = Maps.newHashMap();
-                segment.put(record.getApi(), indicators);
-            }
-            ApiIndicatorSummary summary = indicators.get(record.getIndicatorName());
-            if (summary == null) {
-                summary = new ApiIndicatorSummary().setApi(record.getApi())
-                        .setCount(0)
-                        .setIndicatorName(record.getIndicatorName())
-                        .setIndicatorUnit(record.getIndicatorUnit())
-                        .setOperation(record.getOperation())
-                        .setLastResetTime(System.currentTimeMillis())
-                        .setSummaryValue(0);
-                indicators.put(record.getIndicatorName(), summary);
-            }
+            Map<String, ApiIndicatorSummary> indicators = segment.computeIfAbsent(api, a -> Maps.newHashMap());
+
+            ApiIndicatorSummary summary = indicators.computeIfAbsent(
+                    record.getIndicatorName(),
+                    indicatorName -> new ApiIndicatorSummary().setApi(api)
+                            .setCount(0)
+                            .setIndicatorName(indicatorName)
+                            .setIndicatorUnit(record.getIndicatorUnit())
+                            .setOperation(record.getOperation())
+                            .setLastResetTime(Instant.now().toEpochMilli())
+                            .setSummaryValue(0)
+            );
 
             switch (record.getOperation()) {
                 case SUMMARY:
@@ -81,7 +77,7 @@ public class PerformanceSummaryServiceNode {
             String formattedNow = LocalDateTime.ofInstant(now, ZoneId.systemDefault())
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             // 获取接口统计结果
-            List<ApiIndicatorReport> reports =  segment.entrySet().stream()
+            List<ApiIndicatorReport> reports = segment.entrySet().stream()
                     .map(
                             e -> e.getValue().values()
                                     .stream()
@@ -104,7 +100,7 @@ public class PerformanceSummaryServiceNode {
 
             return reports;
         };
-        return CompletableFuture.supplyAsync(getAndResetTask,executor);
+        return CompletableFuture.supplyAsync(getAndResetTask, executor);
     }
 
     private ApiIndicatorReport assemble(ApiIndicatorSummary summary, String now) {
