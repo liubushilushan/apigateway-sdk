@@ -23,7 +23,10 @@
     <properties>
         <revision>1.0.0-SNAPSHOT</revision>
         <guava.version>28.1-jre</guava.version>
+        <curator.version>2.12.0</curator.version>
         <lombok.version>1.18.8</lombok.version>
+        <dubbo.version>2.7.4.1</dubbo.version>
+        <apache.common.version>3.9</apache.common.version>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
     </properties>
@@ -53,7 +56,7 @@
             <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-recipes</artifactId>
-                <version>2.12.0</version>
+                <version>${curator.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>log4j</groupId>
@@ -64,12 +67,12 @@
             <dependency>
                 <groupId>org.apache.dubbo</groupId>
                 <artifactId>dubbo-spring-boot-starter</artifactId>
-                <version>2.7.4.1</version>
+                <version>${dubbo.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.9</version>
+                <version>${apache.common.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.dreamlife.hippocampus</groupId>
