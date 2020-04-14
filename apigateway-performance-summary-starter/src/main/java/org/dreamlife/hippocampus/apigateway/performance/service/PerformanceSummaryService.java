@@ -2,6 +2,8 @@ package org.dreamlife.hippocampus.apigateway.performance.service;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.remoting.exchange.Request;
+import org.apache.dubbo.remoting.exchange.Response;
 import org.dreamlife.hippocampus.apigateway.performance.model.ApiIndicatorRecord;
 import org.dreamlife.hippocampus.apigateway.performance.model.ApiIndicatorReport;
 import org.springframework.beans.factory.InitializingBean;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.InitializingBean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.stream.IntStream;
 
@@ -75,7 +78,12 @@ public class PerformanceSummaryService implements InitializingBean {
     }
     public void submit(ApiIndicatorRecord record) {
         PerformanceSummaryServiceNode node = route(record.getApi());
-        node.submit(record);
+        try{
+            node.submit(record);
+        }catch (RejectedExecutionException t){
+            // 任务过载时，不能影响业务线程的执行
+            log.error("PerformanceSummaryThreadPool is exhausted, detail msg: {}",t.getMessage());
+        }
     }
 
     /**
@@ -88,15 +96,21 @@ public class PerformanceSummaryService implements InitializingBean {
                             List<ApiIndicatorReport> apiIndicatorReports = null;
                             try {
                                 apiIndicatorReports = node.getAndReset().get();
+                            } catch (RejectedExecutionException e) {
+                                // 任务过载时，不能影响计时器的执行
+                                log.error("PerformanceSummaryThreadPool is exhausted, can't get summary report, detail msg: {}",e.getMessage());
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+
                             return apiIndicatorReports;
                         }
                 )
                 .filter(Objects::nonNull)
                 .flatMap(List::stream)
                 .forEach(report -> {
+                    // 打日志的行为只能交给定时器来完成
+                    // 如果交给线程池来完成，则会造成当前任务执行时间过长，堆积其他任务
                     log.info(report.getResult());
                 });
     }
