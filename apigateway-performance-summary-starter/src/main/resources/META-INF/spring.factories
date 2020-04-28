@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.dreamlife.hippocampus.apigateway.performance.PerformanceAutoConfiguration
+com.liuapi.apigateway.performance.PerformanceAutoConfiguration

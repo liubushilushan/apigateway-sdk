@@ -1,1 +1,1 @@
-invokerRecorder=org.dreamlife.hippocampus.apigateway.performance.record.RpcApiRecorder
+invokerRecorder=RpcApiRecorder

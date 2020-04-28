@@ -21,7 +21,7 @@
 **请求示例**
 ``` 
 {
-  "interfaceClass": "org.dreamlife.hippocampus.apigateway.demo.DemoService",
+  "interfaceClass": "DemoService",
   "methodName": "sayHello",
   "version": null,
   "group": null,

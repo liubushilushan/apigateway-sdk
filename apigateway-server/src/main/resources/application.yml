@@ -3,7 +3,7 @@ server:
 logging:
   level:
     root: warn
-    org.dreamlife.hippocampus.apigateway: info
+    com.liuapi.apigateway: info
 dubbo:
   application:
     name: apiGateway
