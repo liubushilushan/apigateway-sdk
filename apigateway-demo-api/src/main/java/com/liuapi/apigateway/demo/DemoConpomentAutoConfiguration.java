@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
  * @date 2020/4/5
  */
 @Configuration
-@ComponentScan("org.dreamlife.hippocampus.apigateway.demo")
-@DubboComponentScan("org.dreamlife.hippocampus.apigateway.demo")
+@ComponentScan("com.liuapi.apigateway.demo")
+@DubboComponentScan("com.liuapi.apigateway.demo")
 public class DemoConpomentAutoConfiguration {
 }
