@@ -22,7 +22,7 @@
     </parent>
     <properties>
         <revision>1.0.0-SNAPSHOT</revision>
-        <guava.version>28.1-jre</guava.version>
+        <guava.version>29.0-jre</guava.version>
         <curator.version>2.12.0</curator.version>
         <lombok.version>1.18.8</lombok.version>
         <dubbo.version>2.7.4.1</dubbo.version>
